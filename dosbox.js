@@ -128,10 +128,14 @@ export async function start_dosbox(args = {})
 
         try
         {
+            const runCmd = Array.isArray(args.run)
+                ? args.run.reduce((commands, cmd)=>([...commands, "-c", cmd]), [])
+                : ["-c", args.run];
+
             jsdosInterface = await jsdosInstance.main([
                 "-conf", "dosbox.conf",
                 "-c", `mixer master ${args.dosboxMasterVolume}`,
-                "-c", args.run,
+                ...runCmd
             ]);
         }
         catch (error)

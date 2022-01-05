@@ -26,7 +26,7 @@ export default {
     "big-red-racing": {
         title: "Big Red Racing",
         zip: "./content/brr.zip",
-        run: "racing.exe",
+        run: ["cls", "racing.exe"],
     },
 
     undefined: {
@@ -39,7 +39,7 @@ The `zip` property gives the name of the ZIP file containing the program's data 
 
 The `title` property gives a string to be shown in the browser's title bar while running this program.
 
-The `run` property sets the command to be executed in DOSBox to run the program.
+The `run` property sets the command to be executed in DOSBox to run the program. Multiple commands can be given as an array.
 
 ## Running a container
 
