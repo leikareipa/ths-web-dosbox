@@ -137,10 +137,6 @@ export async function start_dosbox(args = {})
                 attributes: true, 
                 attributeFilter: ["width", "height"],
             });
-            
-            window.document.title = (typeof args.title == "undefined")
-                ? "DOSBox"
-                : `${args.title} - DOSBox`;
 
             dosboxContainer.classList.add("running");
         }
@@ -160,6 +156,10 @@ export async function start_dosbox(args = {})
                 "-c", `mixer master ${args.dosboxMasterVolume}`,
                 ...runCmd
             ]);
+
+            window.document.title = (typeof args.title == "undefined")
+                ? "DOSBox"
+                : `${args.title} - DOSBox`;
         }
         catch (error)
         {
