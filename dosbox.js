@@ -126,6 +126,29 @@ export async function start_dosbox(args = {})
             throw new Error("Failed to extract the content file on the DOSBox instance: " + error);
         }
 
+        // Reveal the js-dos canvas to the user.
+        try
+        {
+            dosboxCanvasScaler.contain_integer();
+            window.addEventListener("resize", dosboxCanvasScaler.contain_integer);
+    
+            const dosboxVideoModeObserver = new MutationObserver(dosboxCanvasScaler.contain_integer);
+            dosboxVideoModeObserver.observe(dosboxCanvas, { 
+                attributes: true, 
+                attributeFilter: ["width", "height"],
+            });
+            
+            window.document.title = (typeof args.title == "undefined")
+                ? "DOSBox"
+                : `${args.title} - DOSBox`;
+
+            dosboxContainer.classList.add("running");
+        }
+        catch (error)
+        {
+            throw new Error("Failed to set up JavaScript: " + error);
+        }
+
         try
         {
             const runCmd = Array.isArray(args.run)
@@ -140,25 +163,12 @@ export async function start_dosbox(args = {})
         }
         catch (error)
         {
-            throw new Error("Failed to execute main() on the DOSBox instance: " + error);
+            throw new Error("Failed to run the DOS program: " + error);
         }
-
-        dosboxCanvasScaler.contain_integer();
-        window.addEventListener("resize", dosboxCanvasScaler.contain_integer);
-
-        const dosboxVideoModeObserver = new MutationObserver(dosboxCanvasScaler.contain_integer);
-        dosboxVideoModeObserver.observe(dosboxCanvas, { 
-            attributes: true, 
-            attributeFilter: ["width", "height"],
-        });
-
-        dosboxContainer.classList.add("running");
-        window.document.title = (args.title == undefined)
-                                ? "DOSBox"
-                                : `${args.title} - DOSBox`;
     }
     catch (error)
     {
+        dosboxContainer.classList.remove("running");
         console.error("Could not run DOSBox. " + error);
         messageDisplay.textContent = error;
         messageDisplay.className = "error";
