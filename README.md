@@ -17,13 +17,13 @@ The following JavaScript file defines a set of DOS program containers.
 
 ```javascript
 export default {
-    "quake": {
+    "^quake/?$": {
         title: "Quake",
         zip: "./content/quake.zip",
         run: "quake.exe",
     },
 
-    "big-red-racing": {
+    "^big-red-racing/?$": {
         title: "Big Red Racing",
         zip: "./content/brr.zip",
         run: ["cls", "racing.exe"],
@@ -41,8 +41,10 @@ The `title` property gives a string to be shown in the browser's title bar while
 
 The `run` property sets the command to be executed in DOSBox to run the program. Multiple commands can be given as an array.
 
+The object keys are regular expressions that identify the hash URL associated with the corresponding content.
+
 ## Running a container
 
-With the containers as defined above and the app hosted at `http://localhost/dosbox/`, you can run Quake by accessing the URL `http://localhost/dosbox/#quake`.
+With the containers as defined above and the app hosted at `http://localhost/dosbox/`, you can run Quake by accessing the URL `http://localhost/dosbox/#quake` (or `http://localhost/dosbox/#quake/`, since the regular expression representing its hash URL allows a single trailing slash).
 
 The app will fetch the `./content/quake.zip` file, load its contents into JS-DOS, and execute the `quake.exe` command inside JS-DOS.

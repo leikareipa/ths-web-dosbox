@@ -27,10 +27,24 @@
 
         <script type="module">
             import content from "./content-ths.js";
-            const targetContent = (window.location.hash || "#").substr(1);
-
             import {start_dosbox} from "./dosbox.js";
-            start_dosbox(content[targetContent] || content[undefined]);
+
+            const targetContentKey = (window.location.hash || "#").substr(1);
+            let targetContent = undefined;
+
+            const contentKeys = Object.keys(content);
+            for (let i = 0; i < contentKeys.length; i++)
+            {
+                const contentKey = contentKeys[i];
+
+                if ((new RegExp(contentKey, "i")).test(targetContentKey))
+                {
+                    targetContent = Object.values(content)[i];
+                    break;
+                }
+            }
+
+            start_dosbox(targetContent || content[undefined]);
         </script>
     
     </body>
