@@ -147,6 +147,30 @@ export async function start_dosbox(args = {})
 
         try
         {
+            if ((typeof args.run === "string") && args.run.startsWith("?")) {
+                let inputString = new URLSearchParams(window.location.search).get(args.run.substring(1));
+
+                if ((inputString === null) || !inputString.length) {
+                    throw "Missing URL parameter.";
+                }
+
+                // We'll be using eval() on this user-submitted string, so let's be strict about
+                // what we allow in it.
+                {
+                    // DOS isn't case sensitive but many other things (e.g. JavaScript) are, so
+                    // reduce the probability that the string could be useful for non-DOS intents.
+                    inputString = inputString.toUpperCase();
+
+                    // The string is expected to be something along the lines of "'DOSCOMMAND.BAT
+                    // ARG1 -ARG2 /ARG3', 'ANOTHERDOSCOMMAND'". 
+                    if (inputString.match(/[^A-Z0-9,\. '"?/\\\-]/)) {
+                        throw "Malformed URL parameter.";
+                    }
+                }
+
+                args.run = eval(`([${inputString}])`);
+            }
+
             const runCmd = Array.isArray(args.run)
                 ? args.run.reduce((commands, cmd)=>([...commands, "-c", cmd]), [])
                 : ["-c", args.run];

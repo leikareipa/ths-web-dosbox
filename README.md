@@ -29,6 +29,12 @@ export default {
         run: ["cls", "racing.exe"],
     },
 
+    "^flight-simulator-5.1/?$": {
+        title: "Flight Simulator 5.1",
+        zip: "./content/fs51.zip",
+        run: "?run",
+    },
+
     undefined: {
         // This container will be loaded if no others match the request. 
     }
@@ -39,7 +45,7 @@ The `zip` property gives the name of the ZIP file containing the program's data 
 
 The `title` property gives a string to be shown in the browser's title bar while running this program.
 
-The `run` property sets the command to be executed in DOSBox to run the program. Multiple commands can be given as an array.
+The `run` property sets the command(s) to be executed in DOSBox to run the container's program. Multiple commands can be given as an array. If this property is a string beginning with `?`, the rest of the string is interpreted as the name of a URL parameter providing the command(s), where each command is encased in quote marks and multiple commands are separated by commas (e.g. `http://localhost/dosbox/?run='cd bin','cls','fs51.exe'#flight-simulator-5.1`).
 
 The object keys are regular expressions that identify the hash URL associated with the corresponding content.
 
