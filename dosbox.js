@@ -148,10 +148,11 @@ export async function start_dosbox(args = {})
         try
         {
             if ((typeof args.run === "string") && args.run.startsWith("?")) {
-                let inputString = new URLSearchParams(window.location.search).get(args.run.substring(1));
+                const urlParamName = args.run.substring(1);
+                let inputString = new URLSearchParams(window.location.search).get(urlParamName);
 
                 if ((inputString === null) || !inputString.length) {
-                    throw "Missing URL parameter.";
+                    throw `The required URL parameter "${urlParamName}" is empty.`;
                 }
 
                 // We'll be using eval() on this user-submitted string, so let's be strict about
@@ -161,14 +162,14 @@ export async function start_dosbox(args = {})
                     // reduce the probability that the string could be useful for non-DOS intents.
                     inputString = inputString.toUpperCase();
 
-                    // The string is expected to be something along the lines of "'DOSCOMMAND.BAT
-                    // ARG1 -ARG2 /ARG3', 'ANOTHERDOSCOMMAND'". 
-                    if (inputString.match(/[^A-Z0-9,\. '"?/\\\-]/)) {
-                        throw "Malformed URL parameter.";
+                    // The string is expected to be something along the lines of "['DOSCOMMAND.BAT
+                    // ARG1 -ARG2 /ARG3', 'ANOTHERDOSCOMMAND']". 
+                    if (inputString.match(/[^A-Z0-9,\. '"?\[\]/\\\-]/)) {
+                        throw `The contents of the URL parameter "${urlParamName}" are malformed.`;
                     }
                 }
 
-                args.run = eval(`([${inputString}])`);
+                args.run = eval(`"use strict"; (${inputString})`);
             }
 
             const runCmd = Array.isArray(args.run)
@@ -187,7 +188,7 @@ export async function start_dosbox(args = {})
         }
         catch (error)
         {
-            throw new Error("Failed to run the DOS program: " + error);
+            throw new Error("Failed to start the DOS program: " + error);
         }
     }
     catch (error)
