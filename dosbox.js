@@ -160,13 +160,9 @@ export async function start_dosbox(args = {})
                 // We'll be using eval() on this user-submitted string, so let's be strict about
                 // what we allow in it.
                 {
-                    // DOS isn't case sensitive but many other things (e.g. JavaScript) are, so
-                    // reduce the probability that the string could be useful for non-DOS intents.
-                    inputString = inputString.toUpperCase();
-
                     // The string is expected to be something along the lines of "['DOSCOMMAND.BAT
                     // ARG1 -ARG2 /ARG3', 'ANOTHERDOSCOMMAND']". 
-                    if (inputString.match(/[^A-Z0-9,\. '"?\[\]/\\\-]/)) {
+                    if (inputString.match(/[^A-Za-z0-9,\. '"?\[\]/\\\-]/)) {
                         throw `The contents of the URL parameter "${urlParamName}" are malformed.`;
                     }
                 }
