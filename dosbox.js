@@ -147,6 +147,8 @@ export async function start_dosbox(args = {})
 
         try
         {
+            // A single run command string of the form "?xxxx" provides the name of a URL parameter
+            // containing the actual run command(s), so let's get that from the URL.
             if ((typeof args.run === "string") && args.run.startsWith("?")) {
                 const urlParamName = args.run.substring(1);
                 let inputString = new URLSearchParams(window.location.search).get(urlParamName);
@@ -172,15 +174,24 @@ export async function start_dosbox(args = {})
                 args.run = eval(`"use strict"; (${inputString})`);
             }
 
-            const runCmd = Array.isArray(args.run)
-                ? args.run.reduce((commands, cmd)=>([...commands, "-c", cmd]), [])
-                : ["-c", args.run];
+            // The run command(s) can be provided by the user as either a string or an array. For
+            // our in-code convenience, let's coerce them into an array.
+            args.run = [args.run].flat();
 
-            jsdosInterface = await jsdosInstance.main([
-                "-conf", "dosbox.conf",
-                "-c", `mixer master ${args.dosboxMasterVolume}`,
-                ...runCmd
-            ]);
+            if (args.run.some(cmd=>(typeof cmd !== "string"))) {
+                throw "All run commands must be strings.";
+            };
+
+            jsdosInterface = await jsdosInstance.main(["-conf", "dosbox.conf"]);
+
+            // Providing these shell commands via the call to jsdosInstance.main() doesn't work
+            // reliably, as some commands get ignored at pseudo-random. So we'll just issue them
+            // separately here. A downside is the commands don't show on the DOSBox CLI, unlike
+            // when passing them via main().
+            await jsdosInterface.shell(
+                `mixer master ${args.dosboxMasterVolume}`,
+                ...args.run,
+            );
 
             window.document.title = (typeof args.title == "undefined")
                 ? "DOSBox"
